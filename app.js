@@ -19,6 +19,18 @@ const FILL = {
   es: 'Completa correctamente todos los campos'
 };
 
+const COPY = {
+  ar: '© حقوق النشر محفوظة لعبد أبو عرار',
+  en: '© All rights reserved — Abd Abu Arar',
+  fr: '© Tous droits réservés — Abd Abu Arar',
+  es: '© Todos los derechos reservados — Abd Abu Arar'
+};
+const REDIR = {
+  ar: 'جاري تحويلك لبوابة الدفع...',
+  en: 'Redirecting to the payment gateway...',
+  fr: 'Redirection vers la passerelle de paiement...',
+  es: 'Redirigiendo a la pasarela de pago...'
+};
 /* ---------- أدوات ---------- */
 function toast(msg) {
   const el = $('#toast'); el.textContent = msg; el.classList.add('show');
@@ -94,7 +106,8 @@ function card(b) {
     </div>
     <div class="info">
       <h4>${b.t}</h4>
-      <small>${b.a} · ${t('c_' + b.c)}</small>
+           <small>${b.a} · ${t('c_' + b.c)}</small>
+      <small style="display:block;opacity:.7;font-size:.75rem;margin-top:2px">${COPY[LANG] || COPY.ar}</small>
       <div class="row"><span class="price">${money(b.p)}</span>
       ${own ? `<a class="add dl" href="${b.file}" download>${t('download')}</a>`
             : `<button class="add" data-add="${b.id}">${t('add')}</button>`}</div>
@@ -292,6 +305,14 @@ function checkoutPage() {
         && /^\d{2}\/\d{2}$/.test($('#ce').value) && /^\d{3,4}$/.test($('#cc').value);
     }
     if (!ok) { toast(FILL[LANG] || FILL.ar); return; }
+    
+    if (pay !== 'card' && !form.dataset.go) {
+      form.dataset.go = '1';
+      form.querySelector('button[type="submit"]').disabled = true;
+      toast(REDIR[LANG] || REDIR.ar);
+      setTimeout(() => form.requestSubmit(), 1800);
+      return;
+    }
 
     const no = 'HB-' + String(Date.now()).slice(-6);
     const orders = list('hibr-orders');
